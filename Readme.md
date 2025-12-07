@@ -7,10 +7,10 @@
 
 **Docker**
 
-# Herramientas de Versionador de Codigo
+## Herramientas de Versionador de Codigo
 
  **Git/GitHub**
 
- ## Backend
+## Base de Datos Postgres
 
- Aqui usaremos Express para la construccion de la logica del servidor
+El Backend y el Frontend tienen su Readme.md respectivamente, con sus instrucciones
