@@ -17,5 +17,4 @@
  Para inicializar la libreria del dotenv es segun el siguiente comando `require('dotenv').config()`
  una vez que hemos inicializado, podemos leer una variable de entorno que esta guardado en el archivo .env
 
- var output = ejemplo process.env.VARIABLEENTORNO
- 
+ `var output = ejemplo process.env.VARIABLEENTORNO`
