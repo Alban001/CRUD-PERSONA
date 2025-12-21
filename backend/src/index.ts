@@ -2,25 +2,30 @@
     const cors = require('cors')
     import coneccion from './config/database'
     import db from './models'
+import { types } from 'node:util'
+    // INICIALIZACION DEL FRAMEWORK EXPRESS
     const app = express()
-    // Inicializacion del dotenv para leer del .envfile
+    // INICIALIZACION DEL DOTENV, PARA LEER EL ARCHIVO .ENV
     require('dotenv').config()
+    // ASIGNACION DE PUERTO
     const PORT: string = process.env.PORT ?? "3900" // ?? retorna el valor derecho si el izuierdo es null o undefined
-    console.log(`tipo de dato es ${typeof(process.env.PORT)}`)
+    // MIDDLEWARE CORS, ESTO ES CONFIGURABLE PARA RESTRICCION DE PETICIONES HTTP
     app.use(cors())
+   // CREAMOS UNA FUNCCION CONECTOR QUE COMBINA SYNC, Y AUTHENTICATE
+    app.use(express.json())
 
-    const testConector = async(): Promise<void> => {
-        try {
-            await coneccion.authenticate()
-            console.log('Conección con la db establecido corretamente!')
-        } catch (error: any) {
-            console.error('Error al conectar a la base de datos ', error.message)
-            process.exit(1)
-        }
-    }   
-    testConector()
-    db.coneccion.sync()
-    app.listen(PORT, ()=>{
-        console.log(`Servidor corriendo en el puerto ${PORT}`)
-    })
-
+   const conector = async (): Promise<void> =>{
+    try {
+        
+        await coneccion.authenticate()
+        console.log('Conecccion con la base de datos exitoso!')
+        await db.coneccion.sync()
+        console.log('Tablas sincronizadas correctamente')
+        app.listen(PORT,() =>{
+            console.log(`Servidor express corriendo en el puerto ${PORT}`)
+        })
+    } catch (error:any) {
+         console.error(`Ha ocurrido un error inesperado ${error}`)
+    }
+   }
+   conector()

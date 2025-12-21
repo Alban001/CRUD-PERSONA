@@ -7,7 +7,7 @@ class Persona extends Model<
   InferCreationAttributes<Persona>
 >{
     declare id: CreationOptional<number>
-    declare email: string
+    declare nombre: string
     declare edad:number
     declare address: string
 }
@@ -20,7 +20,7 @@ Persona.init(
         primaryKey: true
         
     },
-       email: {
+       nombre: {
         type: DataTypes.STRING,
         allowNull: true
        },

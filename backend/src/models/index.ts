@@ -1,5 +1,5 @@
 import coneccion from "../config/database";
-import Persona from "./Persona";
+import Persona from "./persona.model";
 
 
 const db ={
