@@ -1,44 +1,32 @@
-import { Model, InferAttributes, InferCreationAttributes, CreationOptional, DataTypes } from "sequelize";
-import coneccion from "../config/database";
-
+import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
+import conecciondb from "../config/db";
 
 class Persona extends Model<
-  InferAttributes<Persona>,
-  InferCreationAttributes<Persona>
+   InferAttributes<Persona>,
+   InferCreationAttributes<Persona>
 >{
     declare id: CreationOptional<number>
-    declare nombre: string
+    declare nombre:string
     declare edad:number
-    declare address: string
 }
 
-Persona.init(
-    {
-        id: {
+Persona.init({
+    id:{
         type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-        
+        primaryKey:true,
+        autoIncrement:true
     },
-       nombre: {
-        type: DataTypes.STRING,
-        allowNull: true
-       },
-       edad: {
-         type: DataTypes.INTEGER,
-         allowNull: false
-       },
-       address:{
-        type: DataTypes.STRING,
-        allowNull: false
-       },
+    nombre:{
+        type:DataTypes.STRING,
+        allowNull:true
     },
-       {
-        sequelize: coneccion,
-        tableName: 'persona',
-        modelName: 'Persona',
-        timestamps:true
-       }
+    edad:{
+        type:DataTypes.INTEGER
+    }
+},{
+    sequelize:conecciondb,
+    modelName:'persona'
+}
 )
 
-export default Persona;
+export default Persona
