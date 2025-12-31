@@ -1,140 +1,31 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import Persona from "../models/persona.model";
+import { json } from "sequelize";
 
-
-// CREAR
-
-const createPeronsa = async (req: Request, res: Response): Promise<void> => {
+const createPersona = async (req: Request, res: Response): Promise<void> => {
     try {
         const { nombre, edad } = req.body
-        if (!nombre) {
+        // Comprobacion de campos 
+        if (!nombre || !edad) {
             res.status(400).json({
                 ok: false,
-                msg: 'Campo "edad", es requerido'
+                msg: 'Se require el campo nombre y edad'
             })
             return;
         }
-        const nuevaPersona = await Persona.create({
-            nombre,
-            edad
-        })
+        const nuevaPersona = await Persona.create({ nombre, edad })
+
         res.status(201).json({
             ok: true,
-            msg: 'Perosna creada exitosamente!',
+            msg: 'Persona creada exitosamente!',
             persona: nuevaPersona
         })
 
     } catch (error) {
         if (error instanceof Error) {
-            console.error('Ha ocurrido un error ' + error.message)
-            console.error('Stacktrace ' + error.stack)
+            console.error('Error ocurrido ' + error.message)
         } else {
-            console.error('Error desconocido ' + error)
-        }
-        res.status(500).json({
-            ok: false,
-            msg: 'Erorr interno '
-        })
-    }
-}
-
-// LERR!
-const readPersonas = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // Extraigo id de. params
-        const { id } = req.params
-        // si existe, entonces lo alojo en una constante
-        if (id) {
-            const persona = await Persona.findByPk(id)
-            // Como una condicional anidada, si no existe retorn un status 404
-            if (!persona) {
-                res.status(404).json({
-                    ok: false,
-                    msg: 'Persona no encontrada!'
-                })
-                // mato el proceso
-                return;
-            }
-            // entonces si finalmente existe envio un retorno res 200
-            res.status(200).json({
-                ok: true,
-                persona
-            })
-            return;
-
-        }
-        // Si no envia el parametro entonces retornamos todos los registros de las personas
-        const personas = await Persona.findAll({
-            order: [['createdAt', 'DESC']]
-        })
-        // Y retornamos un res 200 con todos los registros
-        res.status(200).json({
-            ok: true,
-            total: personas.length,
-            personas
-        })
-    } catch (error) {
-        /* Si es es instancia de error, entonces retornamos todas keys de Error mediante console.error
-        luego retornamos un res 500  */
-        if (error instanceof Error) {
-            console.error('Ha ocurrido un error ' + error.message)
-            console.error('Stacktrace ' + error.stack)
-        } else {
-            console.error('Ha ocurrido un error desconocido ' + error)
-        }
-        res.status(500).json({
-            ok: false,
-            msg: 'Error interno del servidor!'
-        })
-    }
-}
-
-// Actualizar persona 
-
-const updatePersona = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // Extraer id de la persona 
-        const { id } = req.params
-        // Extraer campos 
-        const { nombre, edad } = req.body
-        // Validacion 1 de existencia
-        const persona = await Persona.findByPk(id)
-
-        if (!persona) {
-            res.status(404).json({
-                ok: false,
-                msg: `La persona con id ${id} no se encuentra! `
-            })
-            return;
-        }
-        // Validacion 2 campos vacios
-
-        if (nombre === undefined && edad === undefined) {
-            res.status(400).json({
-                ok: false,
-                msg: 'Se debe enviar al menos un campo para actualizar'
-            })
-            return;
-        }
-        // Actualizar los campos enviado 
-        if (nombre !== undefined) persona.nombre = nombre
-        if (edad !== undefined) persona.edad = edad
-        await persona.save()
-        res.status(200).json({
-            ok:true,
-            msg:'Usuario actualizado correctamente!',
-            persona: {
-                id:persona.id,
-                nombre:persona.nombre,
-                edad:persona.edad
-            }
-        })
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error('Ha ocurrido un error' + error.message)
-            console.error('Stacktrace ' + error.stack)
-        } else {
-            console.error('Error desconocido ' + error)
+            console.error('Error interno del servidor ' + error)
         }
         res.status(500).json({
             ok: false,
@@ -143,45 +34,134 @@ const updatePersona = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
+const readPersona = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params
+
+        if(id){
+        const persona = await Persona.findByPk(id)
+            if (!persona) {
+            res.status(404).json({
+                ok: false,
+                msg: `Persona con id ${id} no encontrada`
+            })
+            return;
+        }
+        res.status(200).json({
+            ok: true,
+            persona
+        })
+
+        }
+        // Si no se envio el id, retornamos todos los registros
+        const personas = await Persona.findAll({ order: [['createdAt', 'DESC']] })
+
+        res.status(200).json({
+            ok: true,
+            total: personas.length,
+            personas
+        })
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Ha ocurrido un error ' + error.message)
+        } else {
+            console.error('Error interno del servidor' + error)
+        }
+        res.status(500).json({
+            ok: false,
+            msg: 'ERRO INTERNO DEL SERVIDOR'
+        })
+    }
+}
+
+const updatePersona = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params
+        const { nombre, edad } = req.body
+        const persona = await Persona.findByPk(id)
+
+        if (!persona) {
+            res.status(404).json({
+                ok: false,
+                msg: 'Persona no encontrada'
+            })
+            return;
+        }
+        /* CUIDADO CON ESTA CONDICION LOGICA AQUI LA PREMISA ES si nombre es undefined y edad es undefined
+        entonces enivame al menos un campo, es decir puedo enivar UNO o todos los campos 
+        sin embargo si uso OR si nombre es undefined o edad es undefined entonces no permito, todos deben ser typed*/
+        if (nombre === undefined && edad === undefined) {
+            res.status(401).json({
+                ok: false,
+                msg: 'Debes enviar al menos un campo para actualizar'
+            })
+            return;
+        }
+        if (nombre !== undefined) persona.nombre = nombre
+        if (edad !== undefined) persona.edad = edad
+        await persona.save()
+        res.status(200).json({
+            ok: true,
+            msg: 'Persona actualizada',
+            persona: {
+                nombre: persona.nombre,
+                edad: nombre.edad
+            }
+        })
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Ha ocurrido un error ' + error.message)
+        } else {
+            console.error('Error interno del servidor' + error)
+        }
+        res.status(500).json({
+            ok: false,
+            msg: 'ERRO INTERNO DEL SERVIDOR'
+        })
+    }
+}
+
 const deletePersona = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params
         const persona = await Persona.findByPk(id)
+
         if (!persona) {
             res.status(404).json({
                 ok: false,
-                msg: `No se ha encontrado la persona con el id ${id}`
+                msg: `Persona con ${id} no encontrado!`
             })
             return;
         }
+
         await persona.destroy()
         res.status(200).json({
-            ok: true,
-            msg: 'Persona eliminada correctamente',
+            ok: false,
+            msg: 'Persona eliminadad correctamente!',
             persona: {
-                id: persona.id,
                 nombre: persona.nombre,
                 edad: persona.edad
             }
         })
     } catch (error) {
         if (error instanceof Error) {
-            console.error('Ha ocurrido un error ' + error.message)  
-
+            console.error('Ha ocurrido un error ' + error.message)
         } else {
-            console.error('Error interno ' + error)
+            console.error('Error interno del servidor' + error)
         }
         res.status(500).json({
             ok: false,
-            msg: 'error interno'
+            msg: 'ERRO INTERNO DEL SERVIDOR'
         })
     }
 }
 
 const personaController = {
-    readPersonas,
-    createPeronsa,
+    createPersona,
+    readPersona,
     updatePersona,
-    deletePersona,
+    deletePersona   
+
 }
 export default personaController
