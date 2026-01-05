@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Trabajo from "../models/trabajo.mode";
+import { Trabajo } from "../models/index";
 
 const createTrabajo =async (req: Request, res: Response): Promise<void> =>{
     try {

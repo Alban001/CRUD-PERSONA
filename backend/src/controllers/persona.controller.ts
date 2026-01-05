@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import Persona from "../models/persona.model";
-import { json } from "sequelize";
+import {Persona} from "../models/index";
 
 const createPersona = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -104,10 +103,7 @@ const updatePersona = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             ok: true,
             msg: 'Persona actualizada',
-            persona: {
-                nombre: persona.nombre,
-                edad: nombre.edad
-            }
+            persona:persona
         })
     } catch (error) {
         if (error instanceof Error) {
