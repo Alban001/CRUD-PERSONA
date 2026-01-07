@@ -8,6 +8,4 @@ export interface Persona {
 // Aqui creamos un tipado de typescript, donde excluimos campos, es decdir OMITE<modelo, campo1, campoN> 
 // usamos Omit , que es una utilidad de typescript para excluir propiedades
 export type updatePersonaDTO = Omit<Persona , 'id'>
-export type createPersonaDTO = Omit<Person4554FTT4a , 'id'>
-
-º
+export type createPersonaDTO = Omit<Persona , 'id'>

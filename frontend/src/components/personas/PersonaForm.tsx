@@ -1,6 +1,19 @@
-
+import { useState } from "react"
+import { createPersonaDTO } from "../../types/persona"
 
 const PersonaForm = () => {
+  const [form, setForm] = useState<createPersonaDTO>({
+  nombre:'',
+  edad:0
+})
+
+const handleChange =(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setForm({
+       ...form,
+       [e.target.name]: e.target.value
+    })
+}
+
   return (
     <div className="h-screen w-full bg-gray-200 flex items-center justify-center">
       <div>
@@ -8,7 +21,7 @@ const PersonaForm = () => {
         <form className="border rounded-sm border-gray-400 m-4 p-8 ring-1 ring-green-200" action="">
           <div className="flex flex-col gap-4 p-4">
             <div><label>Nombre:</label></div>
-            <div><input type="text" placeholder="Ingresa tu nombre" className="w-full border outline-none  hover:ring-1 ring-green-400 rounded-sm"/></div>
+            <div><input onChange={handleChange} name='nombre' value={form.nombre} type="text" placeholder="Ingresa tu nombre" className="w-full border outline-none  hover:ring-1 ring-green-400 rounded-sm"/></div>
           </div>
           <div className="flex flex-col gap-4 p-4">
             <div><label>Edad:</label></div>
