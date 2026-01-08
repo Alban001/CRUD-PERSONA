@@ -8,9 +8,10 @@ const PersonaForm = () => {
 })
 
 const handleChange =(e:React.ChangeEvent<HTMLInputElement>)=>{
+   const { name, value } = e.target;
     setForm({
        ...form,
-       [e.target.name]: e.target.value
+       [name]: name === 'edad' ? Number(value) : value
     })
 }
 
@@ -25,7 +26,7 @@ const handleChange =(e:React.ChangeEvent<HTMLInputElement>)=>{
           </div>
           <div className="flex flex-col gap-4 p-4">
             <div><label>Edad:</label></div>
-            <div><input type="number" placeholder="Ingresa tu edad" className="w-full border outline-none  hover:ring-1 ring-green-400 rounded-sm"/></div>
+            <div><input onChange={handleChange} name='edad' value={form.edad} type="number" placeholder="Ingresa tu edad" className="w-full border outline-none  hover:ring-1 ring-green-400 rounded-sm"/></div>
           </div>
           <div className="flex justify-center items-center ">
             <button className="button bg-orange-400 p-2 m-2 rounded-sm hover:bg-orange-500 transition duration-100 ease-in-out hover:shadow-sm hover:scale-102 hover:text-white">Enviar</button>
